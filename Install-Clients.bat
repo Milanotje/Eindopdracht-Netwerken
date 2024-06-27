@@ -1,41 +1,46 @@
-# Zorg ervoor dat je het script uitvoert met administrator rechten
+@echo off
 
-# Installeer Chocolatey
-Set-ExecutionPolicy Bypass -Scope Process -Force; 
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; 
-iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+:: Ensure the script is run with administrator privileges
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo Please run this script as an administrator.
+    pause
+    exit /b
+)
 
-# Wacht even tot Chocolatey is geïnstalleerd
-Start-Sleep -Seconds 20
+:: Install Chocolatey using the provided script
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Set-ExecutionPolicy Bypass -Scope Process; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/Milanotje/Eindopdracht-Netwerken/main/Chocolatey-Install.ps1'))"
 
-# Installeer OpenOffice
+:: Verify Chocolatey installation
+choco -v
+if %errorLevel% neq 0 (
+    echo Chocolatey installation failed.
+    pause
+    exit /b
+)
+
+:: Update Chocolatey
+choco upgrade chocolatey -y
+
+:: Install requested programs
 choco install openoffice -y
-
-# Installeer 7zip
 choco install 7zip -y
-
-# Installeer Malwarebytes
 choco install malwarebytes -y
-
-# Installeer AVG Antivirus Free (let op: dit is geen demo, maar de gratis versie)
 choco install avgantivirusfree -y
-
-# Installeer Adobe Acrobat Reader
-choco install adobereader -y
-
-# Installeer Google Chrome
+choco install adobe-reader -y
 choco install googlechrome -y
-
-# Installeer TeamViewer
 choco install teamviewer -y
 
-# Update alle geïnstalleerde pakketten
+:: Update all installed packages
 choco upgrade all -y
 
-# Zorg ervoor dat de Windows Firewall is ingeschakeld
-Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
+:: Enable Windows Firewall
+netsh advfirewall set allprofiles state on
 
-# Voer een snelle virusscan uit met Windows Defender
-Start-MpScan -ScanType QuickScan
+:: Run a virus scan
+"%ProgramFiles%\AVG\Antivirus\avgscan" /scan /report
 
-Write-Output "Alle taken zijn voltooid."
+echo.
+echo All installations and configurations are complete.
+echo Please restart your computer for all changes to take effect.
+pause
