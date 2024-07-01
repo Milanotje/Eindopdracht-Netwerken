@@ -27,7 +27,7 @@ choco install openoffice -y
 choco install 7zip -y
 choco install malwarebytes -y
 choco install avgantivirusfree -y
-choco install adobe-reader -y
+choco install adobereader -y
 choco install googlechrome -y
 choco install teamviewer -y
 
